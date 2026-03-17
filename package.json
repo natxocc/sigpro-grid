@@ -1,0 +1,15 @@
+{
+  "name": "aggrid_custom",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "ag-grid-community": "^35.1.0",
+    "ag-grid-enterprise": "^35.1.0",
+    "terser": "^5.46.1"
+  },
+  "devDependencies": {
+    "vite": "^8.0.0"
+  }
+}
