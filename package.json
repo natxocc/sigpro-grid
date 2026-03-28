@@ -10,9 +10,6 @@
   "scripts": {
     "build": "vite build"
   },
-  "scripts": {
-    "build": "vite build"
-  },
   "dependencies": {
     "ag-grid-community": "^35.1.0",
     "ag-grid-enterprise": "^35.1.0",
