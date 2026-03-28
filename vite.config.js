@@ -8,7 +8,7 @@ export default defineConfig({
       entry: resolve(__dirname, 'main.js'),
       name: 'AgGridCustom',
       // Nombre del archivo final
-      fileName: () => `aggrid_custom.js`,
+      fileName: () => `grid.js`,
       formats: ['es']
     },
     rollupOptions: {
