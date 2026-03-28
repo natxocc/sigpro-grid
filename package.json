@@ -1,6 +1,6 @@
 {
   "name": "aggrid",
-  "version": "1.0.0",
+  "version": "35.2.0",
   "type": "module",
   "main": "./grid/index.js",
   "module": "./grid/index.js",

@@ -9,7 +9,7 @@ import {
   ClientSideRowModelModule,
   themeQuartz,
   iconSetQuartzLight,
-  createGrid // La exportamos por si la necesitas fuera
+  createGrid
 } from "ag-grid-community";
 
 import {
@@ -25,7 +25,6 @@ import {
   ClipboardModule,
 } from "ag-grid-enterprise";
 
-// ✅ Registro de módulos automático al importar este archivo
 ModuleRegistry.registerModules([
   ValidationModule,
   ColumnAutoSizeModule,
@@ -46,7 +45,6 @@ ModuleRegistry.registerModules([
   ClipboardModule,
 ]);
 
-// ✅ Exportamos lo básico para que el bundle sea útil
 export { 
   createGrid, 
   themeQuartz, 
