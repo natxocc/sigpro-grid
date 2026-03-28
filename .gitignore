@@ -1,10 +1,5 @@
-# Ignora las dependencias (pesan un huevo)
 node_modules/
-
-# Ignora archivos temporales y de log
 .DS_Store
+dist/
 *.log
 .env
-
-# NO ignores la carpeta 'grid' porque es donde está tu librería compilada
-# Si tienes 'dist' en el gitignore, puedes dejarlo, pero 'grid' debe subir a GitHub
