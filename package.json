@@ -1,5 +1,5 @@
 {
-  "name": "aggrid",
+  "name": "sigpro-grid",
   "version": "35.2.0",
   "type": "module",
   "main": "./grid/index.js",
