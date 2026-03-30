@@ -7,7 +7,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'main.js'),
       name: 'AgGrid',
-      fileName: () => `index.js`,
+      fileName: () => `grid.js`,
       formats: ['es']
     },
     minify: 'terser',
