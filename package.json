@@ -4,16 +4,14 @@
   "type": "module",
   "main": "./grid/index.js",
   "module": "./grid/index.js",
+  "types": "./index.d.ts",
   "files": [
     "grid"
   ],
   "scripts": {
-    "build": "vite build"
+    "build": "bun build main.js --outfile grid/grid.js --minify --format esm --target node && node -e \"require('fs').writeFileSync('grid/grid.js', require('fs').readFileSync('grid/grid.js', 'utf8').replace(/\\n/g,' '))\""
   },
-  "devDependencies": {
-    "vite": "^8.0.0",
-    "terser": "^5.46.1"
-  },
+  "devDependencies": {},
   "dependencies": {
     "ag-grid-community": "^35.2.0",
     "ag-grid-enterprise": "^35.2.0"

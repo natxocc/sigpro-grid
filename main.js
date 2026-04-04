@@ -23,7 +23,7 @@ import {
   StatusBarModule,
   ExcelExportModule,
   ClipboardModule,
-} from "ag-grid-enterprise";
+} from "ag-grid-enterprise_mod";
 
 ModuleRegistry.registerModules([
   ValidationModule,
