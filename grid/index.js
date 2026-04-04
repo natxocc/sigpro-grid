@@ -22,7 +22,6 @@ export const Grid = (props, lang) => {
         const initialData = typeof data === "function" ? data() : data;
         const initialOptions = typeof options === "function" ? options() : options;
 
-        // Eventos comunes de AG Grid
         const commonEvents = [
           'onFilterChanged', 'onModelUpdated', 'onGridSizeChanged',
           'onFirstDataRendered', 'onRowValueChanged', 'onSelectionChanged',
@@ -65,10 +64,10 @@ export const Grid = (props, lang) => {
 
         gridApi = createGrid(container, gridOptions);
 
-        // Watch para cambios en los datos
-        const stopData = $watch(() => {
+        const stopData = $watch([data], () => {
+          if (!gridApi || gridApi.isDestroyed()) return;
           const newData = typeof data === "function" ? data() : data;
-          if (gridApi && !gridApi.isDestroyed() && Array.isArray(newData)) {
+          if (Array.isArray(newData)) {
             const currentData = gridApi.getGridOption("rowData");
             if (newData !== currentData) {
               gridApi.setGridOption("rowData", newData);
@@ -76,8 +75,7 @@ export const Grid = (props, lang) => {
           }
         });
 
-        // Watch para cambios de tema
-        const stopTheme = $watch(() => {
+        const stopTheme = $watch([isDark], () => {
           if (gridApi && !gridApi.isDestroyed()) {
             const dark = isDark();
             const newTheme = getTheme(dark);
@@ -88,28 +86,24 @@ export const Grid = (props, lang) => {
           }
         });
 
-        // ⚠️ IMPORTANTE: Solo actualizar opciones seguras
-        // No actualizar columnDefs, rowData, o theme dinámicamente
         const safeOptions = ['pagination', 'paginationPageSize', 'suppressRowClickSelection',
           'rowSelection', 'enableCellTextSelection', 'ensureDomOrder',
           'stopEditingWhenCellsLoseFocus', 'enterMovesDown', 'enterMovesDownAfterEdit'];
 
-        const stopOptions = $watch(() => {
-          if (gridApi && !gridApi.isDestroyed() && options) {
-            const newOptions = typeof options === "function" ? options() : options;
-            safeOptions.forEach(key => {
-              if (newOptions[key] !== undefined) {
-                try {
-                  gridApi.setGridOption(key, newOptions[key]);
-                } catch (e) {
-                  console.warn(`Could not set grid option ${key}:`, e);
-                }
+        const stopOptions = $watch([options], () => {
+          if (!gridApi || gridApi.isDestroyed() || !options) return;
+          const newOptions = typeof options === "function" ? options() : options;
+          safeOptions.forEach(key => {
+            if (newOptions[key] !== undefined) {
+              try {
+                gridApi.setGridOption(key, newOptions[key]);
+              } catch (e) {
+                console.warn(`Could not set grid option ${key}:`, e);
               }
-            });
-          }
+            }
+          });
         });
 
-        // Limpieza
         container._cleanups.add(stopData);
         container._cleanups.add(stopTheme);
         container._cleanups.add(stopOptions);
