@@ -2,18 +2,28 @@
   "name": "sigpro-grid",
   "version": "35.2.0",
   "type": "module",
-  "main": "./grid/index.js",
-  "module": "./grid/index.js",
-  "types": "./index.d.ts",
+  "main": "./dist/sigpro-grid.esm.js",
+  "module": "./dist/sigpro-grid.esm.js",
+  "unpkg": "./dist/sigpro-grid.js",
+  "jsdelivr": "./dist/sigpro-grid.js",
+  "types": "./dist/index.d.ts",
   "files": [
-    "grid"
+    "dist"
   ],
   "scripts": {
-    "build": "bun build main.js --outfile grid/grid.js --minify --format esm --target node && node -e \"require('fs').writeFileSync('grid/grid.js', require('fs').readFileSync('grid/grid.js', 'utf8').replace(/\\n/g,' '))\""
+    "clean": "rm -rf dist",
+    "build:iife": "bun build ./src/index.js --bundle --outfile=./dist/sigpro-grid.js --format=iife --global-name=SigProGrid",
+    "build:iife:min": "bun build ./src/index.js --bundle --outfile=./dist/sigpro-grid.min.js --format=iife --global-name=SigProGrid --minify",
+    "build:esm": "bun build ./src/index.js --bundle --outfile=./dist/sigpro-grid.esm.js --format=esm",
+    "build:esm:min": "bun build ./src/index.js --bundle --outfile=./dist/sigpro-grid.esm.min.js --format=esm --minify",
+    "build": "npm run clean && npm run build:iife && npm run build:iife:min && npm run build:esm && npm run build:esm:min",
+    "prepublishOnly": "npm run build"
   },
-  "devDependencies": {},
   "dependencies": {
     "ag-grid-community": "^35.2.0",
     "ag-grid-enterprise": "^35.2.0"
+  },
+  "peerDependencies": {
+    "sigpro": "^1.1.21"
   }
 }
