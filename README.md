@@ -4,12 +4,19 @@ A lightweight, reactive wrapper for AG Grid (Community & Enterprise) built for S
 
 ## Features
 
-- 🚀 **Zero dependencies** - AG Grid bundled inside
+- 🚀 **Lightweight wrapper** - AG Grid bundled inside
 - ⚡ **Reactive** - Automatically updates when data changes
 - 🎨 **Theme aware** - Automatically switches between light/dark themes
-- 📦 **Enterprise ready** - Full support for AG Grid Enterprise modules included
+- 📦 **Enterprise ready** - Full AG Grid Enterprise modules included
 - 🔧 **TypeScript support** - Full type definitions included
 - 🧹 **Auto cleanup** - Proper resource disposal
+
+## Requirements
+
+- **SigPro** framework (peer dependency) or use with **SigProUI** (includes SigPro)
+- [SigPro](https://natxocc.github.io/sigpro/#/)
+- [SigProUI](https://natxocc.github.io/sigpro-ui/#/)
+- Modern browser with ES module support
 
 ## Installation
 
