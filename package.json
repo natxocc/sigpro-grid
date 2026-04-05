@@ -2,10 +2,10 @@
   "name": "sigpro-grid",
   "version": "35.2.0",
   "type": "module",
-  "main": "./dist/sigpro-grid.esm.js",
-  "module": "./dist/sigpro-grid.esm.js",
-  "unpkg": "./dist/sigpro-grid.js",
-  "jsdelivr": "./dist/sigpro-grid.js",
+  "main": "./dist/sigpro-grid.esm.min.js",
+  "module": "./dist/sigpro-grid.esm.min.js",
+  "unpkg": "./dist/sigpro-grid.min.js",
+  "jsdelivr": "./dist/sigpro-grid.min.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
@@ -16,7 +16,7 @@
     "build:iife:min": "bun build ./src/index.js --bundle --outfile=./dist/sigpro-grid.min.js --format=iife --global-name=SigProGrid --minify",
     "build:esm": "bun build ./src/index.js --bundle --outfile=./dist/sigpro-grid.esm.js --format=esm",
     "build:esm:min": "bun build ./src/index.js --bundle --outfile=./dist/sigpro-grid.esm.min.js --format=esm --minify",
-    "build": "npm run clean && npm run build:iife && npm run build:iife:min && npm run build:esm && npm run build:esm:min",
+    "build": "bun run clean && bun run build:iife:min && bun run build:esm:min",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
