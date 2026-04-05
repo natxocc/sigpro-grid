@@ -24,7 +24,7 @@ import {
   StatusBarModule,
   ExcelExportModule,
   ClipboardModule,
-} from "ag-grid-enterprise";
+} from "../ag-grid";
 
 ModuleRegistry.registerModules([
   ValidationModule,
@@ -168,5 +168,4 @@ export const Grid = (props, lang) => {
   });
 };
 
-// const gridApi = { current: null };
 export { createGrid, themeQuartz, iconSetQuartzLight, ModuleRegistry };
