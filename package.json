@@ -6,7 +6,6 @@
   "module": "./dist/sigpro-grid.esm.min.js",
   "unpkg": "./dist/sigpro-grid.min.js",
   "jsdelivr": "./dist/sigpro-grid.min.js",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
