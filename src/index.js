@@ -1,4 +1,4 @@
-// src/index.js - TODO INCLUIDO (sin import dinámico)
+import { Tag, Watch, onUnmount } from "../sigpro.js";
 import {
   ModuleRegistry,
   ValidationModule,
@@ -12,7 +12,6 @@ import {
   iconSetQuartzLight,
   createGrid
 } from "ag-grid-community";
-
 import {
   MultiFilterModule,
   CellSelectionModule,
@@ -46,7 +45,7 @@ ModuleRegistry.registerModules([
   ClipboardModule,
 ]);
 
-export const Grid = (props, lang) => {
+export const Grid = (props) => {
   const { data, options, api, on, class: className, style = "height: 100%; width: 100%;" } = props;
   let gridApi = null;
 
@@ -59,112 +58,110 @@ export const Grid = (props, lang) => {
     return dark ? 'ag-theme-alpine-dark' : 'ag-theme-alpine';
   };
 
-  return $html("div", {
-    style,
-    class: className,
-    ref: (container) => {
-      try {
-        const initialData = typeof data === "function" ? data() : data;
-        const initialOptions = typeof options === "function" ? options() : options;
+  const initGrid = (container) => {
+    if (!container) return;
 
-        const commonEvents = [
-          'onFilterChanged', 'onModelUpdated', 'onGridSizeChanged',
-          'onFirstDataRendered', 'onRowValueChanged', 'onSelectionChanged',
-          'onCellClicked', 'onCellDoubleClicked', 'onCellValueChanged',
-          'onRowClicked', 'onSortChanged', 'onContextMenu',
-          'onColumnResized', 'onColumnMoved', 'onRowDataUpdated',
-          'onCellEditingStarted', 'onCellEditingStopped',
-          'onPaginationChanged', 'onBodyScroll'
-        ];
+    const initialData = typeof data === "function" ? data() : data;
+    const initialOptions = typeof options === "function" ? options() : options;
 
-        const eventHandlers = {};
-        commonEvents.forEach(eventName => {
-          if (on?.[eventName]) {
-            eventHandlers[eventName] = (params) => on[eventName](params);
-          }
-        });
+    const commonEvents = [
+      'onFilterChanged', 'onModelUpdated', 'onGridSizeChanged',
+      'onFirstDataRendered', 'onRowValueChanged', 'onSelectionChanged',
+      'onCellClicked', 'onCellDoubleClicked', 'onCellValueChanged',
+      'onRowClicked', 'onSortChanged', 'onContextMenu',
+      'onColumnResized', 'onColumnMoved', 'onRowDataUpdated',
+      'onCellEditingStarted', 'onCellEditingStopped',
+      'onPaginationChanged', 'onBodyScroll'
+    ];
 
-        const gridOptions = {
-          ...initialOptions,
-          theme: getTheme(isDark()),
-          rowData: initialData || [],
-          onGridReady: (params) => {
-            gridApi = params.api;
-            if (api) api.current = gridApi;
-            if (on?.onGridReady) on.onGridReady(params);
+    const eventHandlers = {};
+    commonEvents.forEach(eventName => {
+      if (on?.[eventName]) {
+        eventHandlers[eventName] = (params) => on[eventName](params);
+      }
+    });
 
-            if (initialOptions?.autoSizeColumns) {
-              setTimeout(() => {
-                if (gridApi && !gridApi.isDestroyed()) {
-                  const allColumns = gridApi.getColumns();
-                  if (allColumns?.length) {
-                    gridApi.autoSizeColumns(allColumns);
-                  }
-                }
-              }, 100);
-            }
-          },
-          ...eventHandlers
-        };
+    const gridOptions = {
+      ...initialOptions,
+      theme: getTheme(isDark()),
+      rowData: initialData || [],
+      onGridReady: (params) => {
+        gridApi = params.api;
+        if (api) api.current = gridApi;
+        if (on?.onGridReady) on.onGridReady(params);
 
-        gridApi = createGrid(container, gridOptions);
-
-        const stopData = $watch([data], () => {
-          if (!gridApi || gridApi.isDestroyed()) return;
-          const newData = typeof data === "function" ? data() : data;
-          if (Array.isArray(newData)) {
-            const currentData = gridApi.getGridOption("rowData");
-            if (newData !== currentData) {
-              gridApi.setGridOption("rowData", newData);
-            }
-          }
-        });
-
-        const stopTheme = $watch([isDark], () => {
-          if (gridApi && !gridApi.isDestroyed()) {
-            const dark = isDark();
-            const newTheme = getTheme(dark);
-            const currentTheme = gridApi.getGridOption("theme");
-            if (newTheme !== currentTheme) {
-              gridApi.setGridOption("theme", newTheme);
-            }
-          }
-        });
-
-        const safeOptions = ['pagination', 'paginationPageSize', 'suppressRowClickSelection',
-          'rowSelection', 'enableCellTextSelection', 'ensureDomOrder',
-          'stopEditingWhenCellsLoseFocus', 'enterMovesDown', 'enterMovesDownAfterEdit'];
-
-        const stopOptions = $watch([options], () => {
-          if (!gridApi || gridApi.isDestroyed() || !options) return;
-          const newOptions = typeof options === "function" ? options() : options;
-          safeOptions.forEach(key => {
-            if (newOptions[key] !== undefined) {
-              try {
-                gridApi.setGridOption(key, newOptions[key]);
-              } catch (e) {
-                console.warn(`Could not set grid option ${key}:`, e);
+        if (initialOptions?.autoSizeColumns) {
+          setTimeout(() => {
+            if (gridApi && !gridApi.isDestroyed()) {
+              const allColumns = gridApi.getColumns();
+              if (allColumns?.length) {
+                gridApi.autoSizeColumns(allColumns);
               }
             }
-          });
-        });
+          }, 100);
+        }
+      },
+      ...eventHandlers
+    };
 
-        container._cleanups.add(stopData);
-        container._cleanups.add(stopTheme);
-        container._cleanups.add(stopOptions);
-        container._cleanups.add(() => {
-          if (gridApi && !gridApi.isDestroyed()) {
-            gridApi.destroy();
-            if (api) api.current = null;
-            gridApi = null;
-          }
-        });
+    gridApi = createGrid(container, gridOptions);
 
-      } catch (error) {
-        console.error("Failed to initialize AG Grid:", error);
-        container.innerHTML = `<div class="text-error p-4">Error loading grid: ${error.message}</div>`;
+    const stopData = Watch(data, () => {
+      if (!gridApi || gridApi.isDestroyed()) return;
+      const newData = typeof data === "function" ? data() : data;
+      if (Array.isArray(newData)) {
+        const currentData = gridApi.getGridOption("rowData");
+        if (newData !== currentData) {
+          gridApi.setGridOption("rowData", newData);
+        }
       }
-    }
+    }, true);
+
+    const stopTheme = Watch(isDark, () => {
+      if (gridApi && !gridApi.isDestroyed()) {
+        const dark = isDark();
+        const newTheme = getTheme(dark);
+        const currentTheme = gridApi.getGridOption("theme");
+        if (newTheme !== currentTheme) {
+          gridApi.setGridOption("theme", newTheme);
+        }
+      }
+    }, true);
+
+    const safeOptions = [
+      'pagination', 'paginationPageSize', 'suppressRowClickSelection',
+      'rowSelection', 'enableCellTextSelection', 'ensureDomOrder',
+      'stopEditingWhenCellsLoseFocus', 'enterMovesDown', 'enterMovesDownAfterEdit'
+    ];
+
+    const stopOptions = Watch(options, () => {
+      if (!gridApi || gridApi.isDestroyed() || !options) return;
+      const newOptions = typeof options === "function" ? options() : options;
+      safeOptions.forEach(key => {
+        if (newOptions[key] !== undefined) {
+          try {
+            gridApi.setGridOption(key, newOptions[key]);
+          } catch (e) {}
+        }
+      });
+    }, true);
+
+    onUnmount(() => {
+      stopData();
+      stopTheme();
+      stopOptions();
+      if (gridApi && !gridApi.isDestroyed()) {
+        gridApi.destroy();
+        if (api) api.current = null;
+        gridApi = null;
+      }
+    });
+  };
+
+  return Tag("div", {
+    class: className,
+    style: style,
+    ref: initGrid
   });
 };
 
