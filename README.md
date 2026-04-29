@@ -180,7 +180,7 @@ Grid({
 ## Reactive Data Example
 
 ```javascript
-const users = w([]);
+const users = $([]);
 
 // Data updates automatically reflect in grid
 const addUser = (user) => {
