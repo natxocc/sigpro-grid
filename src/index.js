@@ -1,4 +1,4 @@
-import { Tag, Watch, onUnmount } from "../sigpro.js";
+import { h, watch, onUnmount } from "sigpro";
 import {
   ModuleRegistry,
   ValidationModule,
@@ -106,7 +106,7 @@ export const Grid = (props) => {
 
     gridApi = createGrid(container, gridOptions);
 
-    const stopData = Watch(data, () => {
+    const stopData = watch(data, () => {
       if (!gridApi || gridApi.isDestroyed()) return;
       const newData = typeof data === "function" ? data() : data;
       if (Array.isArray(newData)) {
@@ -117,7 +117,7 @@ export const Grid = (props) => {
       }
     }, true);
 
-    const stopTheme = Watch(isDark, () => {
+    const stopTheme = watch(isDark, () => {
       if (gridApi && !gridApi.isDestroyed()) {
         const dark = isDark();
         const newTheme = getTheme(dark);
@@ -134,7 +134,7 @@ export const Grid = (props) => {
       'stopEditingWhenCellsLoseFocus', 'enterMovesDown', 'enterMovesDownAfterEdit'
     ];
 
-    const stopOptions = Watch(options, () => {
+    const stopOptions = watch(options, () => {
       if (!gridApi || gridApi.isDestroyed() || !options) return;
       const newOptions = typeof options === "function" ? options() : options;
       safeOptions.forEach(key => {
@@ -158,7 +158,7 @@ export const Grid = (props) => {
     });
   };
 
-  return Tag("div", {
+  return h("div", {
     class: className,
     style: style,
     ref: initGrid

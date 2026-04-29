@@ -1,0 +1,42 @@
+name: Publicar Paquete SigProGrid (NPM)
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    container:
+      image: node:20-bullseye
+      options: >-
+        --dns 192.168.1.1
+        --add-host git.natxocc.com:host-gateway
+        --add-host gitea:host-gateway
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        env:
+          GIT_CONFIG_PARAMETERS: "'url.https://git.natxocc.com/.insteadOf=http://gitea:3000/'"
+
+      - name: Instalar Bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+
+      - name: Instalar y Build
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
+          git config --global url."https://git.natxocc.com/".insteadOf "http://gitea:3000/"
+          bun install
+          bun run build
+
+      - name: Configurar Registro y Publicar
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
+          REGISTRY="git.natxocc.com/api/packages/natxocc/npm/"
+          echo "//${REGISTRY}:_authToken=${{ secrets.PACK_TOKEN }}" > ~/.npmrc
+          npm publish --registry "https://${REGISTRY}" --userconfig ~/.npmrc

@@ -1,0 +1,42 @@
+name: Publish to NPM (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versión a publicar (ej: 1.0.0)'
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    container:
+      image: node:20-bullseye
+      options: >-
+        --dns 192.168.1.1
+        --add-host git.natxocc.com:host-gateway
+        --add-host gitea:host-gateway
+
+    steps:
+      - name: Clone source from Gitea
+        run: |
+          git clone https://git.natxocc.com/natxocc/sigpro-grid.git source
+          cd source
+          git checkout main
+
+      - name: Configurar Git para dependencias
+        run: |
+          git config --global url."https://git.natxocc.com/".insteadOf "http://gitea:3000/"
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install and publish
+        run: |
+          cd source
+          bun install
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+          npm publish --access public
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
