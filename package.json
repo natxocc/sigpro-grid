@@ -1,6 +1,7 @@
 {
   "name": "sigpro-grid",
   "version": "35.2.0",
+  "description": "AG-Grid integration for sigpro framework",
   "type": "module",
   "main": "./dist/sigpro-grid.esm.min.js",
   "module": "./dist/sigpro-grid.esm.min.js",
@@ -18,6 +19,22 @@
     "build": "bun run clean && bun run build:iife:min && bun run build:esm:min",
     "prepublishOnly": "npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/natxocc/sigpro-grid.git"
+  },
+  "bugs": {
+    "url": "https://github.com/natxocc/sigpro-grid/issues"
+  },
+  "keywords": [
+    "sigpro",
+    "ag-grid",
+    "grid",
+    "table",
+    "datagrid"
+  ],
+  "author": "natxocc",
+  "license": "MIT",
   "dependencies": {
     "ag-grid-community": "^35.2.0",
     "ag-grid-enterprise": "^35.2.0"
