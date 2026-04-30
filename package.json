@@ -5,10 +5,12 @@
   "type": "module",
   "main": "./dist/sigpro-grid.esm.min.js",
   "module": "./dist/sigpro-grid.esm.min.js",
+  "types": "./index.d.ts",
   "unpkg": "./dist/sigpro-grid.min.js",
   "jsdelivr": "./dist/sigpro-grid.min.js",
   "files": [
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "scripts": {
     "clean": "rm -rf dist",
