@@ -1,4 +1,5 @@
-import { h, watch, onUnmount } from "sigpro-ui";
+const { h, watch, onUnmount } = window;
+
 import {
   ModuleRegistry,
   ValidationModule,
@@ -46,19 +47,29 @@ ModuleRegistry.registerModules([
 ]);
 
 const Grid = (props) => {
-  const { data, options, api, on, class: className, style = "height: 100%; width: 100%;" } = props;
+  const { data, options, api, on, class: className, style = "height: 100%; width: 100%", dark } = props;
   let gridApi = null;
+  let cleanupFn = null;
 
-  const isDark = () => {
-    return document.documentElement.getAttribute('data-theme') === 'dark' ||
-      window.matchMedia('(prefers-color-scheme: dark)').matches;
-  };
+  const getDark = () =>
+    dark !== undefined
+      ? (typeof dark === 'function' ? dark() : dark)
+      : document.documentElement.getAttribute('data-theme') === 'dark' ||
+        window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-  const getTheme = (dark) => {
-    return dark ? 'ag-theme-alpine-dark' : 'ag-theme-alpine';
-  };
+  const getTheme = () => getDark() ? 'ag-theme-balham-dark' : 'ag-theme-balham';
 
   const initGrid = (container) => {
+    if (cleanupFn) {
+      cleanupFn();
+      cleanupFn = null;
+    }
+    if (gridApi && !gridApi.isDestroyed()) {
+      gridApi.destroy();
+      if (api) api.current = null;
+      gridApi = null;
+    }
+
     if (!container) return;
 
     const initialData = typeof data === "function" ? data() : data;
@@ -83,7 +94,7 @@ const Grid = (props) => {
 
     const gridOptions = {
       ...initialOptions,
-      theme: getTheme(isDark()),
+      theme: getTheme(),
       rowData: initialData || [],
       onGridReady: (params) => {
         gridApi = params.api;
@@ -91,14 +102,7 @@ const Grid = (props) => {
         if (on?.onGridReady) on.onGridReady(params);
 
         if (initialOptions?.autoSizeColumns) {
-          setTimeout(() => {
-            if (gridApi && !gridApi.isDestroyed()) {
-              const allColumns = gridApi.getColumns();
-              if (allColumns?.length) {
-                gridApi.autoSizeColumns(allColumns);
-              }
-            }
-          }, 100);
+          params.api.autoSizeAllColumns();
         }
       },
       ...eventHandlers
@@ -106,7 +110,7 @@ const Grid = (props) => {
 
     gridApi = createGrid(container, gridOptions);
 
-    const stopData = watch(data, () => {
+    const stopData = watch(() => {
       if (!gridApi || gridApi.isDestroyed()) return;
       const newData = typeof data === "function" ? data() : data;
       if (Array.isArray(newData)) {
@@ -115,38 +119,30 @@ const Grid = (props) => {
           gridApi.setGridOption("rowData", newData);
         }
       }
-    }, true);
+    });
 
-    const stopTheme = watch(isDark, () => {
-      if (gridApi && !gridApi.isDestroyed()) {
-        const dark = isDark();
-        const newTheme = getTheme(dark);
-        const currentTheme = gridApi.getGridOption("theme");
-        if (newTheme !== currentTheme) {
-          gridApi.setGridOption("theme", newTheme);
-        }
+    const stopTheme = watch(() => {
+      if (!gridApi || gridApi.isDestroyed()) return;
+      getDark();
+      const currentTheme = getTheme();
+      if (currentTheme !== gridApi.getGridOption("theme")) {
+        gridApi.setGridOption("theme", currentTheme);
       }
-    }, true);
+    });
 
-    const safeOptions = [
-      'pagination', 'paginationPageSize', 'suppressRowClickSelection',
-      'rowSelection', 'enableCellTextSelection', 'ensureDomOrder',
-      'stopEditingWhenCellsLoseFocus', 'enterMovesDown', 'enterMovesDownAfterEdit'
-    ];
-
-    const stopOptions = watch(options, () => {
+    const stopOptions = watch(() => {
       if (!gridApi || gridApi.isDestroyed() || !options) return;
       const newOptions = typeof options === "function" ? options() : options;
-      safeOptions.forEach(key => {
-        if (newOptions[key] !== undefined) {
+      if (newOptions) {
+        Object.entries(newOptions).forEach(([key, val]) => {
           try {
-            gridApi.setGridOption(key, newOptions[key]);
-          } catch (e) { }
-        }
-      });
-    }, true);
+            gridApi.setGridOption(key, val);
+          } catch (e) {}
+        });
+      }
+    });
 
-    onUnmount(() => {
+    cleanupFn = () => {
       stopData();
       stopTheme();
       stopOptions();
@@ -154,6 +150,13 @@ const Grid = (props) => {
         gridApi.destroy();
         if (api) api.current = null;
         gridApi = null;
+      }
+    };
+
+    onUnmount(() => {
+      if (cleanupFn) {
+        cleanupFn();
+        cleanupFn = null;
       }
     });
   };
