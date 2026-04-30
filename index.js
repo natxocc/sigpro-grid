@@ -1,4 +1,4 @@
-import { h, watch, onUnmount } from "sigpro";
+import { h, watch, onUnmount } from "sigpro-ui";
 import {
   ModuleRegistry,
   ValidationModule,
@@ -23,7 +23,7 @@ import {
   StatusBarModule,
   ExcelExportModule,
   ClipboardModule,
-} from "../ag-grid";
+} from "./ag-grid";
 
 ModuleRegistry.registerModules([
   ValidationModule,
@@ -45,7 +45,7 @@ ModuleRegistry.registerModules([
   ClipboardModule,
 ]);
 
-export const Grid = (props) => {
+const Grid = (props) => {
   const { data, options, api, on, class: className, style = "height: 100%; width: 100%;" } = props;
   let gridApi = null;
 
@@ -141,7 +141,7 @@ export const Grid = (props) => {
         if (newOptions[key] !== undefined) {
           try {
             gridApi.setGridOption(key, newOptions[key]);
-          } catch (e) {}
+          } catch (e) { }
         }
       });
     }, true);
@@ -165,4 +165,5 @@ export const Grid = (props) => {
   });
 };
 
-export { createGrid, themeQuartz, iconSetQuartzLight, ModuleRegistry };
+if (typeof window !== 'undefined') window.Grid = Grid;
+export { Grid, createGrid, themeQuartz, iconSetQuartzLight, ModuleRegistry };

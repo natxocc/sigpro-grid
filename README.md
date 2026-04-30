@@ -1,23 +1,23 @@
 # SigPro Grid
 
-A lightweight, reactive wrapper for AG Grid (Community & Enterprise) built for SigProUI framework.
+A lightweight, reactive wrapper for AG Grid built for SigProUI.
 
 ## Features
 
 - **Lightweight wrapper** - AG Grid bundled inside
 - **Reactive** - Automatically updates when data changes
 - **Theme aware** - Automatically switches between light/dark themes
-- **Enterprise ready** - Full AG Grid Enterprise modules included
 - **TypeScript support** - Full type definitions included
 - **Auto cleanup** - Proper resource disposal
 
 ## Requirements
 
-- [SigProUI](https://git.natxocc.com/natxocc/sigpro-ui/#)
+- [SigProUI](https://github.com/natxocc/sigpro-ui)
 
 ## Installation
 
 ```bash
+npm install sigpro-ui
 npm install sigpro-grid
 ```
 
@@ -26,6 +26,7 @@ npm install sigpro-grid
 ## Quick Start
 
 ```javascript
+import "sigproui";
 import { Grid } from 'sigpro-grid';
 
 // Create API reference

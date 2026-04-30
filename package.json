@@ -12,10 +12,10 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "build:iife": "bun build ./src/index.js --bundle --outfile=./dist/sigpro-grid.js --format=iife --global-name=SigProGrid",
-    "build:iife:min": "bun build ./src/index.js --bundle --outfile=./dist/sigpro-grid.min.js --format=iife --global-name=SigProGrid --minify",
-    "build:esm": "bun build ./src/index.js --bundle --outfile=./dist/sigpro-grid.esm.js --format=esm",
-    "build:esm:min": "bun build ./src/index.js --bundle --outfile=./dist/sigpro-grid.esm.min.js --format=esm --minify",
+    "build:iife": "bun build ./index.js --bundle --external sigpro-ui --outfile=./dist/sigpro-grid.js --format=iife --global-name=SigProGrid",
+    "build:iife:min": "bun build ./index.js --bundle --external sigpro-ui --outfile=./dist/sigpro-grid.min.js --format=iife --global-name=SigProGrid --minify",
+    "build:esm": "bun build ./index.js --bundle --external sigpro-ui --external ag-grid-community --external ag-grid-enterprise --outfile=./dist/sigpro-grid.esm.js --format=esm",
+    "build:esm:min": "bun build ./index.js --bundle --external sigpro-ui --external ag-grid-community --external ag-grid-enterprise --outfile=./dist/sigpro-grid.esm.min.js --format=esm --minify",
     "build": "bun run clean && bun run build:iife:min && bun run build:esm:min",
     "prepublishOnly": "npm run build"
   },
@@ -40,7 +40,7 @@
     "ag-grid-enterprise": "^35.2.0"
   },
   "peerDependencies": {
-    "sigpro": "^1.2.28"
+    "sigpro-ui": "^1.2.6"
   },
   "devDependencies": {
     "sigpro-ui": "^1.2.6"
