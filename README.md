@@ -7,6 +7,7 @@ A lightweight, reactive wrapper for AG Grid built for SigProUI.
 - **Lightweight wrapper** - AG Grid bundled inside
 - **Reactive** - Automatically updates when data changes
 - **Theme aware** - Automatically switches between light/dark themes
+- **Custom themes** - Create custom themes with `themeQuartz`
 - **TypeScript support** - Full type definitions included
 - **Auto cleanup** - Proper resource disposal
 
@@ -29,11 +30,9 @@ npm install sigpro-grid
 import "sigproui";
 import { Grid } from 'sigpro-grid';
 
-// Create API reference
 const gridApi = { current: null };
 
-// Render grid
-Grid({
+mount(() => Grid({
   api: gridApi,
   data: [
     { id: 1, name: 'John Doe', email: 'john@example.com' },
@@ -58,7 +57,7 @@ Grid({
       console.log('Selected rows:', selected);
     }
   }
-});
+}), '#app');
 
 // Export data
 const exportToExcel = () => {
@@ -80,25 +79,77 @@ const exportToExcel = () => {
 | `on` | `Object` | - | Event handlers |
 | `class` | `string` | - | Additional CSS classes |
 | `style` | `string` | `"height: 100%; width: 100%;"` | Inline styles |
+| `dark` | `boolean \| () => boolean` | - | Force dark mode (overrides auto-detection) |
 
 ### Events
 
 | Event | Description |
 |-------|-------------|
-| `onGridReady` | Grid is ready |
+| `onGridReady` | Grid initialized and ready |
+| `onFirstDataRendered` | First data rendered |
+| `onRowDataUpdated` | Row data updated |
 | `onSelectionChanged` | Selection changed |
 | `onCellClicked` | Cell clicked |
 | `onCellDoubleClicked` | Cell double-clicked |
 | `onCellValueChanged` | Cell value changed |
+| `onCellEditingStarted` | Cell editing started |
+| `onCellEditingStopped` | Cell editing stopped |
+| `onRowClicked` | Row clicked |
+| `onRowValueChanged` | Row value changed |
 | `onSortChanged` | Sorting changed |
 | `onFilterChanged` | Filter changed |
-| `onRowClicked` | Row clicked |
+| `onModelUpdated` | Model updated |
+| `onGridSizeChanged` | Grid size changed |
 | `onColumnResized` | Column resized |
 | `onColumnMoved` | Column moved |
 | `onPaginationChanged` | Pagination changed |
 | `onBodyScroll` | Body scrolled |
+| `onContextMenu` | Context menu opened |
 
-### Grid API Methods
+## Theme
+
+Uses **AG Grid Balham** theme by default:
+- Light: `ag-theme-balham`
+- Dark: `ag-theme-balham-dark`
+
+The grid automatically detects and adapts to dark mode via:
+- `data-theme="dark"` attribute on HTML element
+- System preference `prefers-color-scheme: dark`
+- Manual override with `dark` prop
+
+### Custom Themes
+
+Create custom themes with `themeQuartz`:
+
+```javascript
+import { Grid, themeQuartz } from 'sigpro-grid';
+
+const myTheme = themeQuartz.withParams({
+  accentColor: "#8B5CF6",
+  backgroundColor: "#1E1E2E",
+  borderColor: "#313244",
+  borderRadius: 8,
+  chromeBackgroundColor: "#181825",
+  fontFamily: "Inter, sans-serif",
+  fontSize: "14px",
+  headerBackgroundColor: "#1E1E2E",
+  headerTextColor: "#CDD6F4",
+  oddRowBackgroundColor: "#1E1E2E",
+  rowBorderColor: "transparent",
+  textColor: "#CDD6F4",
+});
+
+mount(() => Grid({
+  api: gridApi,
+  data: [...],
+  options: {
+    theme: myTheme,
+    columnDefs: [...]
+  }
+}), '#app');
+```
+
+## Grid API Methods
 
 Once you have the API reference, you can use all AG Grid methods:
 
@@ -126,7 +177,7 @@ gridApi.current?.setFilterModel(null);
 ## Master/Detail Example
 
 ```javascript
-Grid({
+mount(() => Grid({
   api: gridApi,
   data: masterData,
   options: {
@@ -149,7 +200,7 @@ Grid({
       }
     }
   }
-});
+}), '#app');
 ```
 
 ## With TypeScript
@@ -165,7 +216,7 @@ interface User {
 
 const gridApi = { current: null as GridApi | null };
 
-Grid({
+mount(() => Grid({
   api: gridApi,
   data: () => users,
   options: {
@@ -175,7 +226,7 @@ Grid({
       { field: 'email', headerName: 'Email' }
     ]
   } as GridOptions<User>
-});
+}), '#app');
 ```
 
 ## Reactive Data Example
@@ -188,18 +239,12 @@ const addUser = (user) => {
   users([...users(), user]);
 };
 
-Grid({
+mount(() => Grid({
   api: gridApi,
-  data: () => users(), // Reactive!
+  data: () => users(),
   options: { columnDefs: [...] }
-});
+}), '#app');
 ```
-
-## Dark Mode Support
-
-The grid automatically detects and adapts to dark mode via:
-- `data-theme="dark"` attribute on HTML element
-- System preference `prefers-color-scheme: dark`
 
 ## Included AG Grid Modules
 
@@ -223,11 +268,6 @@ npm install
 # Build AG Grid bundle
 npm run build
 ```
-
-## Requirements
-
-- SigProUI framework
-- Modern browser with ES module support
 
 ## License
 
